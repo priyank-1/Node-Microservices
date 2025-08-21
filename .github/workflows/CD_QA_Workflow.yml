@@ -1,0 +1,66 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Deploy on QA
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  deploy_on_qa:
+
+    runs-on: ubuntu-latest
+
+  
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/checkout@v2
+
+    - name: Create Customer Env file
+      working-directory: ./customers
+      run: 
+        touch .env
+        echo APP_SECRET =ms-nodejs-priyank >> .env
+        echo MONGODB_URI=mongodb:://nosql-db/mystt_customer >> .env
+        echo MSG_QUEUE_URL=amqps://uhwanrrd:fpfemoM1r3v6xSh8YDVwiKEzRUvBxf2E@leopard.lmq.cloudamqp.com/uhwanrrd >> .env
+        echo EXCHANGE_NAME=ONLINE_STORE >> .env
+        echo PORT=8001 >> .env
+        cat .env
+        
+    - name: Create Products Env file
+      working-directory: ./products
+      run: 
+        touch .env
+        echo APP_SECRET =ms-nodejs-priyank >> .env
+        echo MONGODB_URI=mongodb:://nosql-db/mystt_product >> .env
+        echo MSG_QUEUE_URL=amqps://uhwanrrd:fpfemoM1r3v6xSh8YDVwiKEzRUvBxf2E@leopard.lmq.cloudamqp.com/uhwanrrd >> .env
+        echo EXCHANGE_NAME=ONLINE_STORE >> .env
+        echo PORT=8002 >> .env
+        cat .env
+    - name: Create Shopping Env file
+      working-directory: ./shopping
+      run: 
+        touch .env
+        echo APP_SECRET =ms-nodejs-priyank >> .env
+        echo MONGODB_URI=mongodb:://nosql-db/mystt_shopping >> .env
+        echo MSG_QUEUE_URL=amqps://uhwanrrd:fpfemoM1r3v6xSh8YDVwiKEzRUvBxf2E@leopard.lmq.cloudamqp.com/uhwanrrd >> .env
+        echo EXCHANGE_NAME=ONLINE_STORE >> .env
+        echo PORT=8003 >> .env
+        cat .env    
+
+    - name: Generate deployment package
+      run: |
+        zip -r deploy.zip -x '*.git'
+    # - name: Deploy on Elastic beanstalk QA Env
+    #   uses: einaregilsson/beanstalk-deploy@v20
+    #   with:
+    #       aws_access_key : ${{secrets.AWS_ACCESS_KEY_ID}}
+    #       aws_secret_key : ${{secrets.AWS_SECRET_ACCESS_KEY}}
+    #       application_name: MS-NODEJS
+    #       environment_name: MS-NODEJS-env
+    #       version_label: "ver-${{github.sha}}"
+    #       region: us-east-1
+    #       deployment_package: deploy.zip
