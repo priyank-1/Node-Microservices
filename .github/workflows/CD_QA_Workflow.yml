@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       
       - name: Create customer Env file
         working-directory: ./customers
@@ -48,11 +48,10 @@ jobs:
           cat .env
           
       - name: Generate deployment package
-        run: |
-          zip -r deploy.zip . -x '*.git*' '*.github*' '*.md' 'node_modules/*'
+        run:  zip -r deploy.zip . -x '*.git*'
       
       - name: Deploy on Elastic beanstalk QA Env
-        uses: einaregilsson/beanstalk-deploy@v20
+        uses: einaregilsson/beanstalk-deploy@v22
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
